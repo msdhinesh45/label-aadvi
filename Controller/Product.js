@@ -104,9 +104,9 @@ export const getProductById = async (req, res) => {
     const product = await Product.findById(req.params.id).populate("category", "name").lean();
     if (!product) return res.status(404).json({ success: false, message: "Product not found" });
 
-    if (req.user.role.toLowerCase() === "user" && product.status !== "Available") {
-      return res.status(403).json({ success: false, message: "Product is not available" });
-    }
+    // Allow returning product details regardless of status so users can view items
+    // they previously ordered or bookmarked. Keep the status field so frontend
+    // can decide how to present unavailable products.
 
     res.json({ success: true, data: { ...product, images: product.images.map(img => img.url) } });
   } catch (error) {
